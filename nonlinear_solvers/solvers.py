@@ -1,6 +1,5 @@
 """A module providing numerical solvers for nonlinear equations."""
 
-
 class ConvergenceError(Exception):
     """Exception raised if a solver fails to converge."""
 
@@ -31,8 +30,16 @@ def newton_raphson(f, df, x_0, eps=1.0e-5, max_its=20):
     float
         The approximate root computed using Newton iteration.
     """
-    # Delete these two lines when implementing the method.
-    raise NotImplementedError
+    x = x_0
+    k = 1
+    while (abs(f(x))> eps) & (k <= max_its):
+        x = x - f(x) /df(x)
+        k += 1
+    if (k == max_its + 1) & (abs(f(x))> eps):
+        raise ConvergenceError("Max Iteration Reached")
+    else:   
+        return x
+
 
 
 def bisection(f, x_0, x_1, eps=1.0e-5, max_its=20):
@@ -60,8 +67,24 @@ def bisection(f, x_0, x_1, eps=1.0e-5, max_its=20):
     float
         The approximate root computed using bisection.
     """
-    # Delete these two lines when implementing the method.
-    raise NotImplementedError
+    k=1
+    a = x_0
+    b = x_1
+    c=(a+b)/2
+    if f(a)*f(b) > 0: 
+        raise ValueError("Input are of the same sign")
+    else:
+        while (abs(f(c))> eps) & (k <= max_its):
+            if (f(a)*f(c)>0):
+                a=c
+            else:
+                b=c
+            k += 1
+            c=(a+b)/2
+        if (k == max_its + 1) & (abs(f(c))> eps):
+            raise ConvergenceError("Max Iteration Reached")
+        else:  
+            return c
 
 
 def solve(f, df, x_0, x_1, eps=1.0e-5, max_its_n=20, max_its_b=20):
@@ -95,5 +118,9 @@ def solve(f, df, x_0, x_1, eps=1.0e-5, max_its_n=20, max_its_b=20):
     float
         The approximate root.
     """
-    # Delete these two lines when implementing the method.
-    raise NotImplementedError
+    try:
+        print("Attempting division by Newton Raphson")
+        return newton_raphson(f, df, x_0, eps, max_its_n)
+    except ConvergenceError:
+        print("Attempting division by Bisection")
+        return bisection(f, x_0, x_1, eps, max_its_b)
